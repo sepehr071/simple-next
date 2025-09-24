@@ -39,9 +39,10 @@ export default function ChatWidget() {
         if (isExpanded && window.innerWidth < 768) {
           const currentWidth = parseInt(iframe.style.width) || 100;
           const maxMobileWidth = window.innerWidth * 0.95;
-          let newWidth = Math.min(currentWidth, maxMobileWidth);
-          let currentHeight = parseInt(iframe.style.height) || 100;
-          let newHeight = (currentHeight / currentWidth) * newWidth;
+          const newWidth = Math.min(currentWidth, maxMobileWidth);
+          const currentHeight = parseInt(iframe.style.height) || 100;
+          const newHeight = (currentHeight / currentWidth) * newWidth;
+          console.log('Resize log - newWidth:', newWidth, 'currentHeight:', currentHeight, 'newHeight:', newHeight); // Log to validate no reassignment
           iframe.style.width = newWidth + 'px';
           iframe.style.height = newHeight + 'px';
           iframe.style.left = 'auto';
