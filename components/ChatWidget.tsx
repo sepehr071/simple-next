@@ -11,50 +11,37 @@ export default function ChatWidget() {
 
     let isExpanded = false;
 
-    const handleMessage = (e: MessageEvent) => {
-      if (e.data.type === 'widgetResize') {
-        isExpanded = e.data.width > 100;
-        const newWidth = e.data.width;
-        const newHeight = e.data.height;
-        if (isExpanded) {
-          if (window.innerWidth < 768) {
-            // Mobile: full width, partial height (like bottom sheet)
-            iframe.style.cssText = `
-              position:fixed;left:0;right:0;bottom:0;
-              width:100%;height:80%;
-              border-radius:24px 24px 0 0;
-              z-index:2147483647;
-            `;
-            document.body.style.overflow = 'hidden';
-          } else {
-            // Desktop expanded
-            iframe.style.cssText = `
-              position:fixed;right:20px;bottom:20px;
-              width:${newWidth}px;height:${newHeight}px;
-              border-radius:24px;
-              z-index:2147483647;
-            `;
-          }
-        } else {
-          // Collapsed (mobile & desktop same)
-          iframe.style.cssText = `
-            position:fixed;right:20px;bottom:20px;
-            width:100px;height:100px;
-            border-radius:50px;
-            z-index:2147483647;
-          `;
-          document.body.style.overflow = '';
-        }
-      } else if (e.data.type === 'widgetClose') {
+    const setStyles = (expanded: boolean, width: number, height: number) => {
+      if (window.innerWidth < 768 && expanded) {
+        iframe.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;border-radius:0;z-index:2147483647;`;
+        document.body.style.overflow = 'hidden';
+      } else if (expanded) {
+        iframe.style.cssText = `position:fixed;right:20px;bottom:20px;width:${width}px;height:${height}px;border-radius:24px;z-index:2147483647;`;
+      } else {
+        iframe.style.cssText = `position:fixed;right:20px;bottom:20px;width:100px;height:100px;border-radius:50px;z-index:2147483647;`;
         document.body.style.overflow = '';
-        isExpanded = false;
       }
     };
 
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data.type === 'widgetResize') {
+        isExpanded = e.data.width > 100;
+        setStyles(isExpanded, e.data.width, e.data.height);
+      } else if (e.data.type === 'widgetClose') {
+        document.body.style.overflow = '';
+        isExpanded = false;
+        setStyles(false, 100, 100);
+      }
+    };
+
+    const handleResize = () => isExpanded && setStyles(true, parseInt(iframe.style.width) || 100, parseInt(iframe.style.height) || 100);
+
     window.addEventListener('message', handleMessage);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('message', handleMessage);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
