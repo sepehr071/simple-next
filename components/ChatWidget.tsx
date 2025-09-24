@@ -1,57 +1,49 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function ChatWidget() {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    let isExpanded = false;
+
     const handleMessage = (e: MessageEvent) => {
       if (e.data.type === 'widgetResize') {
-        setIsExpanded(e.data.width > 100);
-        const iframe = document.getElementById('chatWidget');
-        if (iframe) {
-          let newWidth = e.data.width;
-          let newHeight = e.data.height;
-          if (window.innerWidth < 768 && isExpanded) {
-            const maxMobileWidth = window.innerWidth * 0.95;
-            newWidth = Math.min(newWidth, maxMobileWidth);
-            newHeight = (newHeight / e.data.width) * newWidth; // Maintain aspect ratio
-            iframe.style.left = 'auto';
-            iframe.style.right = '2.5%';
-            iframe.style.bottom = '20px';
-          } else {
-            iframe.style.left = 'auto';
-            iframe.style.right = '20px';
-          }
-          iframe.style.width = newWidth + 'px';
-          iframe.style.height = newHeight + 'px';
-          iframe.style.borderRadius = newWidth > 100 ? '24px' : '50px';
-          iframe.style.zIndex = '2147483647';
-          iframe.style.pointerEvents = 'auto';
+        isExpanded = e.data.width > 100;
+        let newWidth = e.data.width;
+        let newHeight = e.data.height;
+        if (window.innerWidth < 768 && isExpanded) {
+          // Mobile: Full screen
+          iframe.style.cssText = `
+            position:fixed;top:0;left:0;width:100%;height:100%;border-radius:0;z-index:2147483647;
+          `;
+          document.body.style.overflow = 'hidden';
+        } else if (isExpanded) {
+          // Desktop expanded
+          iframe.style.cssText = `
+            position:fixed;right:20px;bottom:20px;width:${newWidth}px;height:${newHeight}px;border-radius:24px;z-index:2147483647;
+          `;
+        } else {
+          // Collapsed
+          iframe.style.cssText = `
+            position:fixed;right:20px;bottom:20px;width:100px;height:100px;border-radius:50px;z-index:2147483647;
+          `;
+          document.body.style.overflow = '';
         }
+      } else if (e.data.type === 'widgetClose') {
+        document.body.style.overflow = '';
+        isExpanded = false;
       }
     };
 
     const handleWindowResize = () => {
-      const iframe = document.getElementById('chatWidget');
-      if (iframe) {
-        if (isExpanded && window.innerWidth < 768) {
-          const currentWidth = parseInt(iframe.style.width) || 100;
-          const maxMobileWidth = window.innerWidth * 0.95;
-          const newWidth = Math.min(currentWidth, maxMobileWidth);
-          const currentHeight = parseInt(iframe.style.height) || 100;
-          const newHeight = (currentHeight / currentWidth) * newWidth;
-          console.log('Resize log - newWidth:', newWidth, 'currentHeight:', currentHeight, 'newHeight:', newHeight); // Log to validate no reassignment
-          iframe.style.width = newWidth + 'px';
-          iframe.style.height = newHeight + 'px';
-          iframe.style.left = 'auto';
-          iframe.style.right = '2.5%';
-          iframe.style.bottom = '20px';
-        } else if (!isExpanded) {
-          iframe.style.left = 'auto';
-          iframe.style.right = '20px';
-        }
+      if (isExpanded && window.innerWidth < 768) {
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
       }
     };
 
@@ -62,10 +54,11 @@ export default function ChatWidget() {
       window.removeEventListener('message', handleMessage);
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, [isExpanded]);
+  }, []);
 
   return (
     <iframe
+      ref={iframeRef}
       id="chatWidget"
       src="https://web-widget-v2-livid.vercel.app/"
       style={{
@@ -78,7 +71,6 @@ export default function ChatWidget() {
         borderRadius: '50px',
         transition: 'all 0.3s ease',
         zIndex: 2147483647,
-        pointerEvents: 'auto',
       }}
       allow="microphone"
       scrolling="no"
