@@ -16,21 +16,32 @@ export default function ChatWidget() {
         isExpanded = e.data.width > 100;
         const newWidth = e.data.width;
         const newHeight = e.data.height;
-        if (window.innerWidth < 768 && isExpanded) {
-          // Mobile: Full screen
-          iframe.style.cssText = `
-            position:fixed;top:0;left:0;width:100%;height:100%;border-radius:0;z-index:2147483647;
-          `;
-          document.body.style.overflow = 'hidden';
-        } else if (isExpanded) {
-          // Desktop expanded
-          iframe.style.cssText = `
-            position:fixed;right:20px;bottom:20px;width:${newWidth}px;height:${newHeight}px;border-radius:24px;z-index:2147483647;
-          `;
+        if (isExpanded) {
+          if (window.innerWidth < 768) {
+            // Mobile: full width, partial height (like bottom sheet)
+            iframe.style.cssText = `
+              position:fixed;left:0;right:0;bottom:0;
+              width:100%;height:80%;
+              border-radius:24px 24px 0 0;
+              z-index:2147483647;
+            `;
+            document.body.style.overflow = 'hidden';
+          } else {
+            // Desktop expanded
+            iframe.style.cssText = `
+              position:fixed;right:20px;bottom:20px;
+              width:${newWidth}px;height:${newHeight}px;
+              border-radius:24px;
+              z-index:2147483647;
+            `;
+          }
         } else {
-          // Collapsed
+          // Collapsed (mobile & desktop same)
           iframe.style.cssText = `
-            position:fixed;right:20px;bottom:20px;width:100px;height:100px;border-radius:50px;z-index:2147483647;
+            position:fixed;right:20px;bottom:20px;
+            width:100px;height:100px;
+            border-radius:50px;
+            z-index:2147483647;
           `;
           document.body.style.overflow = '';
         }
@@ -40,19 +51,10 @@ export default function ChatWidget() {
       }
     };
 
-    const handleWindowResize = () => {
-      if (isExpanded && window.innerWidth < 768) {
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-      }
-    };
-
     window.addEventListener('message', handleMessage);
-    window.addEventListener('resize', handleWindowResize);
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      window.removeEventListener('resize', handleWindowResize);
     };
   }, []);
 
