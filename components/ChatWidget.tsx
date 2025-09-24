@@ -11,7 +11,8 @@ export default function ChatWidget() {
           iframe.style.width = e.data.width + 'px';
           iframe.style.height = e.data.height + 'px';
           iframe.style.borderRadius = e.data.width > 100 ? '24px' : '50px';
-          iframe.style.zIndex = '9999';
+          iframe.style.zIndex = '2147483647';
+          iframe.style.pointerEvents = 'auto';
         }
       }
     };
@@ -36,7 +37,8 @@ export default function ChatWidget() {
         height: '100px',
         borderRadius: '50px',
         transition: 'all 0.3s ease',
-        zIndex: 9999,
+        zIndex: 2147483647,
+        pointerEvents: 'auto',
       }}
       allow="microphone"
       scrolling="no"
