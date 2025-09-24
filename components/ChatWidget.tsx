@@ -17,7 +17,6 @@ export default function ChatWidget() {
           iframe.style.width = newWidth + 'px';
           iframe.style.height = newHeight + 'px';
           iframe.style.borderRadius = newWidth > 100 ? '24px' : '50px';
-          iframe.style.zIndex = '2147483647';
           iframe.style.pointerEvents = 'auto';
         }
       }
@@ -31,23 +30,29 @@ export default function ChatWidget() {
   }, []);
 
   return (
-    <iframe
-      id="chatWidget"
-      src="https://web-widget-v2-livid.vercel.app/"
+    <div
       style={{
-        border: 'none',
         position: 'fixed' as const,
         bottom: '20px',
         right: '20px',
-        width: '100px',
-        height: '100px',
-        borderRadius: '50px',
-        transition: 'all 0.3s ease',
         zIndex: 2147483647,
         pointerEvents: 'auto',
       }}
-      allow="microphone"
-      scrolling="no"
-    />
+    >
+      <iframe
+        id="chatWidget"
+        src="https://web-widget-v2-livid.vercel.app/"
+        style={{
+          border: 'none',
+          width: '100px',
+          height: '100px',
+          borderRadius: '50px',
+          transition: 'all 0.3s ease',
+          pointerEvents: 'auto',
+        }}
+        allow="microphone"
+        scrolling="no"
+      />
+    </div>
   );
 }
