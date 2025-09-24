@@ -1,23 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ChatWidget() {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
       if (e.data.type === 'widgetResize') {
+        setIsExpanded(e.data.width > 100);
         const iframe = document.getElementById('chatWidget');
         if (iframe) {
           let newWidth = e.data.width;
           let newHeight = e.data.height;
-          if (window.innerWidth < 768 && newWidth > 100) { // Only center when expanded on mobile
+          if (window.innerWidth < 768 && isExpanded) {
             const maxMobileWidth = window.innerWidth * 0.95;
             newWidth = Math.min(newWidth, maxMobileWidth);
             newHeight = (newHeight / e.data.width) * newWidth; // Maintain aspect ratio
-            const leftPos = (window.innerWidth - newWidth) / 2;
-            iframe.style.left = leftPos + 'px';
-            iframe.style.right = 'auto';
-          } else if (window.innerWidth >= 768) {
+            iframe.style.left = 'auto';
+            iframe.style.right = '2.5%';
+            iframe.style.bottom = '20px';
+          } else {
             iframe.style.left = 'auto';
             iframe.style.right = '20px';
           }
@@ -32,11 +35,22 @@ export default function ChatWidget() {
 
     const handleWindowResize = () => {
       const iframe = document.getElementById('chatWidget');
-      if (iframe && window.innerWidth < 768 && parseInt(iframe.style.width) > 100) {
-        // Re-center if expanded on resize (e.g., orientation change)
-        const currentWidth = parseInt(iframe.style.width);
-        const leftPos = (window.innerWidth - currentWidth) / 2;
-        iframe.style.left = leftPos + 'px';
+      if (iframe) {
+        if (isExpanded && window.innerWidth < 768) {
+          const currentWidth = parseInt(iframe.style.width) || 100;
+          const maxMobileWidth = window.innerWidth * 0.95;
+          let newWidth = Math.min(currentWidth, maxMobileWidth);
+          let currentHeight = parseInt(iframe.style.height) || 100;
+          let newHeight = (currentHeight / currentWidth) * newWidth;
+          iframe.style.width = newWidth + 'px';
+          iframe.style.height = newHeight + 'px';
+          iframe.style.left = 'auto';
+          iframe.style.right = '2.5%';
+          iframe.style.bottom = '20px';
+        } else if (!isExpanded) {
+          iframe.style.left = 'auto';
+          iframe.style.right = '20px';
+        }
       }
     };
 
@@ -47,7 +61,7 @@ export default function ChatWidget() {
       window.removeEventListener('message', handleMessage);
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, []);
+  }, [isExpanded]);
 
   return (
     <iframe
