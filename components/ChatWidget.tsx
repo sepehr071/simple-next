@@ -8,9 +8,15 @@ export default function ChatWidget() {
       if (e.data.type === 'widgetResize') {
         const iframe = document.getElementById('chatWidget');
         if (iframe) {
-          iframe.style.width = e.data.width + 'px';
-          iframe.style.height = e.data.height + 'px';
-          iframe.style.borderRadius = e.data.width > 100 ? '24px' : '50px';
+          let newWidth = e.data.width;
+          let newHeight = e.data.height;
+          if (window.innerWidth < 768) {
+            newWidth = Math.min(newWidth, 320);
+            newHeight = (newHeight / e.data.width) * newWidth; // Maintain aspect ratio
+          }
+          iframe.style.width = newWidth + 'px';
+          iframe.style.height = newHeight + 'px';
+          iframe.style.borderRadius = newWidth > 100 ? '24px' : '50px';
           iframe.style.zIndex = '2147483647';
           iframe.style.pointerEvents = 'auto';
         }
