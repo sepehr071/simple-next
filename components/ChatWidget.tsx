@@ -14,6 +14,8 @@ export default function ChatWidget() {
             const maxMobileWidth = window.innerWidth * 0.95;
             newWidth = Math.min(newWidth, maxMobileWidth);
             newHeight = (newHeight / e.data.width) * newWidth; // Maintain aspect ratio
+            iframe.style.left = '2.5%';
+            iframe.style.right = 'auto';
           }
           iframe.style.width = newWidth + 'px';
           iframe.style.height = newHeight + 'px';
