@@ -11,6 +11,7 @@ export default function ChatWidget() {
           iframe.style.width = e.data.width + 'px';
           iframe.style.height = e.data.height + 'px';
           iframe.style.borderRadius = e.data.width > 100 ? '24px' : '50px';
+          iframe.style.zIndex = '9999';
         }
       }
     };
