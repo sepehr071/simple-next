@@ -14,8 +14,8 @@ export default function ChatWidget() {
     const handleMessage = (e: MessageEvent) => {
       if (e.data.type === 'widgetResize') {
         isExpanded = e.data.width > 100;
-        let newWidth = e.data.width;
-        let newHeight = e.data.height;
+        const newWidth = e.data.width;
+        const newHeight = e.data.height;
         if (window.innerWidth < 768 && isExpanded) {
           // Mobile: Full screen
           iframe.style.cssText = `
