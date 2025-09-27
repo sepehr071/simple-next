@@ -56,7 +56,7 @@ export default function ChatWidget() {
     <iframe
       ref={iframeRef}
       id="chatWidget"
-      src="https://web-widget-v2-livid.vercel.app/"
+      src="https://web-widget-autohaus.vercel.app/"
       style={{
         border: 'none',
         position: 'fixed' as const,
