@@ -56,7 +56,7 @@ export default function ChatWidget() {
     <iframe
       ref={iframeRef}
       id="chatWidget"
-      src="https://web-widget-autohaus.vercel.app/"
+      src={process.env.NEXT_PUBLIC_WIDGET_SRC || 'https://web-widget-autohaus.vercel.app/'}
       style={{
         border: 'none',
         position: 'fixed' as const,
