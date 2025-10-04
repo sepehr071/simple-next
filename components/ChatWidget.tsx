@@ -21,7 +21,7 @@ export default function ChatWidget() {
             // Mobile: full width, partial height (like bottom sheet)
             iframe.style.cssText = `
               position:fixed;left:0;right:0;bottom:0;
-              width:100%;height:80%; /* adjust height % as needed */
+              width:100%;height:100%; /* adjust height % as needed */
               border-radius:24px 24px 0 0; /* rounded top corners */
               z-index:2147483647;
             `;
@@ -29,7 +29,7 @@ export default function ChatWidget() {
           } else {
             // Desktop expanded
             iframe.style.cssText = `
-              position:fixed;right:20px;bottom:20px;width:${newWidth}px;height:${newHeight}px;border-radius:24px;z-index:2147483647;
+              position:fixed;right:20px;bottom:20px;width:${newWidth}px;height:${newHeight * 1.15}px;border-radius:24px;z-index:2147483647;
             `;
           }
         } else {
